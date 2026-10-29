@@ -1,11 +1,15 @@
 import logging
 import requests
 from typing import Dict, Any
-from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
+from tenacity import (
+    retry,
+    stop_after_attempt,
+    wait_exponential,
+    retry_if_exception_type,
+)
 
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -15,16 +19,15 @@ class FPLClient:
 
     def __init__(self):
         self.session = requests.Session()
-        self.session.headers.update({
-            "User-Agent": "AutoFPL-Manager/1.0",
-            "Accept": "application/json"
-        })
+        self.session.headers.update(
+            {"User-Agent": "AutoFPL-Manager/1.0", "Accept": "application/json"}
+        )
 
     @retry(
         stop=stop_after_attempt(4),
         wait=wait_exponential(multiplier=1, min=2, max=10),
         retry=retry_if_exception_type(requests.RequestException),
-        reraise=True
+        reraise=True,
     )
     def get_bootstrap_statistic(self) -> Dict[str, Any]:
         endpoint = f"{self.BASE_URL}/bootstrap-static/"
@@ -34,6 +37,21 @@ class FPLClient:
         response.raise_for_status()
 
         logger.info("Succesfully fetched bootstrap-static data.")
+        return response.json()
+
+    @retry(
+        stop=stop_after_attempt(4),
+        wait=wait_exponential(multiplier=1, min=2, max=10),
+        retry=retry_if_exception_type(requests.RequestException),
+        reraise=True,
+    )
+    def get_player_summary(self, player_id: int) -> Dict[str, Any]:
+        """
+        Get player history results.
+        """
+        endpoint = f"{self.BASE_URL}/element-summary/{player_id}/"
+        response = self.session.get(endpoint, timeout=10)
+        response.raise_for_status()
         return response.json()
 
 
