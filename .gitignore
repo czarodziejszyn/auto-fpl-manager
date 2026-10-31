@@ -13,3 +13,6 @@ wheels/
 # Data files
 data/raw/
 data/processed/
+
+# Models
+models/
