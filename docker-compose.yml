@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  fpl-optimizer:
+    build:
+      context: .
+    container_name: autofpl_agent
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
