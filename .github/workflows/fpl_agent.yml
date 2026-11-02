@@ -3,26 +3,25 @@ name: Auto-FPL MLOps Agent
 on:
   schedule:
     - cron: '0 15 * * 4'
-    workflow_dispatch:
-  jobs:
-    run-mlops-pipeline:
-      runs-on: ubuntu-latest
+  workflow_dispatch:
 
-      steps:
-        - name: Checkout repository
-          uses: actions/checkout@v4
-          with:
-            token: ${{ secrets.GITHUB_TOKEN }}
-        - name: Run MLOps Pipeline via Docker Compose
-          run: |
-            docker compose up --build
+jobs:
+  run-mlops-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-        - name: Fix file permissions
-          run: |
-            sudo chown -R $USER:$USER data/ models/
+      - name: Run MLOps Pipeline via Docker Compose
+        run: docker compose up --build
 
-        - name: Auto-commit updated data and models
-          uses: stefanzweifel/git-auto-commit-action@v5
-          with:
-            commit_message: "bot: continuous training - update FPL data, features and MILP squad prediction"
-            file_pattern: "data/* models/*"
+      - name: Fix file permissions
+        run: sudo chown -R $USER:$USER data/ models/
+
+      - name: Auto-commit updated data and models
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "🤖 bot: continuous training - update FPL data, features, and MILP squad prediction"
+          file_pattern: "data/* models/*"
