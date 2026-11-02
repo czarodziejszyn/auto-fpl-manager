@@ -61,7 +61,7 @@ def run_pipeline():
         f.write(f"**Generated on**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
         f.write("### Expected performance\n")
         f.write(f"- **Total budget used:** {total_cost}M / 100.0M\n")
-        f.write(f"- ** Expected points (xP):** {total_xp:.2f}\n\n")
+        f.write(f"- **Expected points (xP):** {total_xp:.2f}\n\n")
         f.write("### Squad\n\n")
         f.write(
             best_squad[["name", "position", "cost", "expected_points"]].to_markdown(
