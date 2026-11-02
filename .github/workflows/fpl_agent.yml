@@ -18,7 +18,7 @@ jobs:
         run: docker compose up --build
 
       - name: Fix file permissions
-        run: sudo chown -R $USER:$USER data/ models/
+        run: sudo chown -R $USER:$USER data/ models/ reports/
 
       - name: Auto-commit updated data and models
         uses: stefanzweifel/git-auto-commit-action@v5
