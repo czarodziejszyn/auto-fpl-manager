@@ -1,4 +1,6 @@
+import os
 import logging
+from datetime import datetime
 from src.data.etl_pipeline import FPLExtractor
 from src.data.feature_engineering import FeatureEngineer
 from src.models.train_model import ModelTrainer
@@ -50,6 +52,24 @@ def run_pipeline():
         print(f"Total expected points (xP): {total_xp:.2f}")
 
     logger.info("=== PIPELINE FINISHED ===")
+
+    os.makedirs("reports", exist_ok=True)
+    report_path = "reports/latest_squad.md"
+
+    with open(report_path, "w") as f:
+        f.write("# Auto-FPL Optimal Squad\n\n")
+        f.write(f"**Generated on**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
+        f.write("### Expected performance\n")
+        f.write(f"- **Total budget used:** {total_cost}M / 100.0M\n")
+        f.write(f"- ** Expected points (xP):** {total_xp:.2f}\n\n")
+        f.write("### Squad\n\n")
+        f.write(
+            best_squad[["name", "position", "cost", "expected_points"]].to_markdown(
+                index=False
+            )
+        )
+
+    logger.info(f"Report saved to {report_path}")
 
 
 if __name__ == "__main__":
