@@ -33,8 +33,7 @@ class FeatureEngineer:
             if col in df_gw.columns:
                 df_gw[col] = df_gw[col].astype(float)
 
-        logger.info(
-            "Sorting data by player and fixture for time-series operations...")
+        logger.info("Sorting data by player and fixture for time-series operations...")
         df_gw = df_gw.sort_values(by=["player_id", "round"])
 
         logger.info("Calculating rolling features (3-match window)...")
@@ -59,25 +58,42 @@ class FeatureEngineer:
             "total_points"
         ].shift(-1)
 
-        df_model = df_gw.dropna(subset=["target_points_next_gw"])
+        df_train_raw = df_gw.dropna(subset=["target_points_next_gw"])
+        df_inference_raw = df_gw[df_gw["target_points_next_gw"].isna()]
 
+        def merge_metadata(df_subset):
+            return df_subset.merge(
+                df_players[
+                    [
+                        "id",
+                        "first_name",
+                        "second_name",
+                        "element_type",
+                        "now_cost",
+                        "team",
+                    ]
+                ],
+                left_on="player_id",
+                right_on="id",
+                how="inner",
+            ).drop(columns=["id"])
+
+        df_train = merge_metadata(df_train_raw)
+        df_inference = merge_metadata(df_inference_raw)
+
+        df_train.to_parquet(
+            self.processed_dir / "features_train.parquet", engine="pyarrow", index=False
+        )
+        df_inference.to_parquet(
+            self.processed_dir / "features_inference.parquet",
+            engine="pyarrow",
+            index=False,
+        )
         logger.info(
-            "Merging with static player data (positions, costs, teams)...")
-
-        df_final = df_model.merge(
-            df_players[
-                ["id", "first_name", "second_name",
-                    "element_type", "now_cost", "team"]
-            ],
-            left_on="player_id",
-            right_on="id",
-            how="inner",
-        ).drop(columns=["id"])
-
-        output_path = self.processed_dir / "features.parquet"
-        df_final.to_parquet(output_path, engine="pyarrow", index=False)
-        logger.info(f"Feature dataset saved to {
-            output_path} with {len(df_final)} rows.")
+            f"Feature engineering complete. Train rows: {
+                len(df_train)
+            }, inference rows: {len(df_inference)}."
+        )
 
 
 if __name__ == "__main__":

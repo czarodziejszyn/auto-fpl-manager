@@ -12,4 +12,4 @@ COPY . .
 
 ENV PYTHONUNBUFFERED=1
 
-CMD ["uv", "run", "python", "-m", "src.optimization.squad_optimizer"]
+CMD ["uv", "run", "python", "-m", "main.py"]
