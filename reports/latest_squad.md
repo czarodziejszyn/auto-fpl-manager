@@ -1,10 +1,10 @@
 # Auto-FPL Optimal Squad
 
-**Generated on**: 2026-11-02 18:40:58
+**Generated on**: 2026-11-02 19:01:25
 
 ### Expected performance
 - **Total budget used:** 100.0M / 100.0M
-- ** Expected points (xP):** 72.69
+- **Expected points (xP):** 72.69
 
 ### Squad
 
