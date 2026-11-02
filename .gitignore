@@ -15,4 +15,4 @@ data/raw/
 data/processed/
 
 # Models
-models/
+/models/
